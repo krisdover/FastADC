@@ -17,7 +17,6 @@ API functions.
         1. For channels registered via `reference()` - stores the ADC result in an internal data structure for later retrieval. _**Note**: The internal
         data structure only stores one result per a channel so successive results are overwritten._
 
-        --OR--
         2. For channels registered via `handle()` - passes
 the result to the supplied handler.
 
@@ -33,7 +32,7 @@ it's meant to replace these.
 Alternatively if configurable sample rates are not desired, the library can be made to use the ADC in a pseudo *Free Running mode* configuration, whereby it performs back-to-back conversions in *Single Conversion mode*, manually starting subsequent conversion at the end of the `ISR` routine. This conversion frees *Timer/Counter1* to be used for other purposes at the cost of the sample period being fixed to match the ADC conversion time (roughly 13 ADC clock cycles on the Atmega328p). _**Note**: The actual Free Running mode* could not be used because the ADC hardware starts subsequent conversions before the ISR has a chance to specify the next channel or reference for the conversion._
 
 ## Usage example
-See [FastADC.ino](examples\FastADC\FastADC.ino) in the project.
+See [FastADC.ino](examples/FastADC/FastADC.ino) in the project.
 
 ## Caveats
 Unlike Arduino's `analogRead()`, this library does not support specifying ADC channels using Arduino board-specific pin numbers. So any you will need to explicitly convert any such pin existing numbers to their corresponding ADC channels (as defined for the MCU) when replacing existing usages of `analogRead()` with `analog.read()` or `analog.handle()`.
