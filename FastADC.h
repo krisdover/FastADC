@@ -13,7 +13,7 @@
 //
 // Author: Kris Dover
 // Email: krisdover@gmail.com
-// 
+//
 // FastADC - An interrupt-driven ADC alternative for Arduino
 //
 #ifndef __FASTADC_H
@@ -85,6 +85,7 @@ void FastADC<N>::init() const
     ADCSRA |= _BV(ADPS2);   // set ADPS2 bit for 128 prescalar
     ADCSRA |= _BV(ADEN);    // enable ADC
     ADCSRA |= _BV(ADIE);    // enable ADC interrupt
+#ifndef FASTADC_WITHOUT_TIMER1
     ADCSRA |= _BV(ADATE);   // enable auto-trigger
     ADCSRB |= _BV(ADTS0);   // set ADTS0 bit for auto-trigger source: Timer/Counter1 Compare Match B
     ADCSRB |= _BV(ADTS2);   // set ADTS2 bit for auto-trigger source: Timer/Counter1 Compare Match B
@@ -94,6 +95,7 @@ void FastADC<N>::init() const
     TCCR1B  = 0;            // initialize TCCR1B
     TCCR1B |= _BV(WGM12);   // turn on CTC mode
     TCCR1B |= _BV(CS11);    // set CS11 bit for 8 prescaler
+#endif
 }
 
 template<int N>
@@ -116,7 +118,11 @@ void FastADC<N>::handleResultThenNextChannel()
         const int vRef = decodeVRefAt(nextChannelIndex);
         ADMUX = vRef<<6 | (nextChannel & 0x0f);
     }
+#ifndef FASTADC_WITHOUT_TIMER1
     TIFR1 |= _BV(OCF1B); // clear Compare Match B interrupt to start next conversion
+#else
+    ADCSRA |= _BV(ADSC); // clear ADC start bit to start next conversion
+#endif
 }
 
 template<int N>
